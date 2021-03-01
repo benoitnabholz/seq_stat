@@ -78,11 +78,11 @@ To use the program:
 # store the sequence name in a list
 ls data/*fasta >list_file
 
-# compute sequence statistics according that the sequence of non-coding DNA 
+# compute sequence statistics according that the sequence are non-coding DNA 
 seq_stat_2pop -seq list_file -f fasta -coding non-coding -tvts 1.0 \
  -pop1 Tguttata -pop2 Pacuticauda -outgroup NA -o out_non_coding.csv
 
-# compute sequence statistics according that the sequence of coding DNA 
+# compute sequence statistics according that the sequence are coding DNA 
 seq_stat_2pop -seq list_file -f fasta -coding coding -tvts 2.0 \
  -pop1 Tguttata -pop2 Pacuticauda -outgroup NA -o out_coding.csv
 
