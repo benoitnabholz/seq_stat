@@ -67,7 +67,8 @@ seq_stat_2pop -seq [listSeq] -f [phylip or fasta] -coding [coding or non-coding]
 -----
 ## Example file
 
-Ten fasta sequences are store in the directory data/
+Two fasta sequences are store in the directory `data/`.
+There are two populations (`Tguttata` and `Pacuticauda`) but no outgroup.
 
 To use the program:
 
