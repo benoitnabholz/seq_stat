@@ -11,7 +11,7 @@ This program is written using the [**Bio ++** library ](http://biopp.univ-montp2
 --------
 ### Installation
 
-You can use the static executable compile for linux x64 computer. You can also compile the program assuming that you have [**Bio ++**](http://biopp.univ-montp2.fr/wiki/index.php/Main_Page) installed (here the Bio++ library is locally installed in `$HOME/local/bpp/dev/` directory):
+You can use the static executable compiled for linux x64 computer (see [Release](https://github.com/benoitnabholz/seq_stat_2pop/releases/tag/v1)). You can also compile the program assuming that you have [**Bio ++**](http://biopp.univ-montp2.fr/wiki/index.php/Main_Page) installed (here the Bio++ library is locally installed in `$HOME/local/bpp/dev/` directory):
 
 ```
 g++ -g seq_stat_2pop.cpp -o ./seq_stat_2pop \
