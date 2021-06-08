@@ -619,7 +619,7 @@ double FstNei82(const PolymorphismSequenceContainer& psc, unsigned int id1, unsi
 		int n_y = Pop2->getNumberOfSequences();
 		w = 1.* n_x/(n_x + n_y);
 	}
-	cout << w << endl;
+	//cout << w << endl;
 
 	meanPiIntra = w * piIntra1 + w * piIntra2;
 	
@@ -728,7 +728,7 @@ vector<int> NumberOfDifferenceBetweenPopulations(const PolymorphismSequenceConta
 				ok = "ok";
 			}
 			if(!SiteTools::isConstant(sitePop1, true, true) && !SiteTools::isConstant(sitePop2, true, true)){
-				cout << "Shared " << i << endl;
+				//cout << "Shared " << i << endl;
 				Shared++;
 				ok = "ok";
 			}
@@ -761,7 +761,9 @@ int main (int argc, char* argv[]){
 try{
 if (argc == 1 || argc < 13)
 {
-	cout << "\n#####################\n### Usage : ";
+	cout << "\n#####################";
+	cout << "\nVersion 1.1\n";
+	cout << "\n##### USAGE :\n";
 	cout << "\nseq_stat_2pop -seq [listSeq] -f [phylip or fasta] -coding [coding or non-coding] -tvts [tv/ts ratio for computing NSS] -pop1 [prefix_pop1] -pop2 [prefix_pop2] -outgroup [prefix_out] -o [out file]\n" << endl;
 	
 	cout << "### Statistics :" << endl;
@@ -909,7 +911,7 @@ while (!Filelist.eof ()){
 		cerr << "ERROR!!! File " << nomfic << " does not exists." << endl;
 		exit(-1);
 	}
-  	double FstHud, FstNei, FstNei_w, FstNei_uw, piInter;
+  	double FstHud, FstNei_w, FstNei_uw;
 	const NucleicAlphabet * alpha = new DNA();
 	const CodonAlphabet *codonAlpha = new CodonAlphabet(alpha);
 	const GeneticCode *GC = new StandardGeneticCode(alpha);
@@ -1132,7 +1134,7 @@ while (!Filelist.eof ()){
 			FstNei_w = FstNei82(*psc1, 1, 2, true, false);
 			FstNei_uw = FstNei82(*psc1, 1, 2, false, false);
 			Dxy = PiInter(*pscFinalNuc, 1, 2);
-			piTotal = tajima83(*psci, false);
+			piTotal = SequenceStatistics::tajima83(*psc1, false);
 		}
 
 	
@@ -1230,7 +1232,7 @@ while (!Filelist.eof ()){
 			FstNei_w = FstNei82(*psc1, 1, 2, true, false);
 			FstNei_uw = FstNei82(*psc1, 1, 2, false, false);
 			Dxy = PiInter(*psc1, 1, 2);
-			piTotal = tajima83(*psci, false);
+			piTotal = SequenceStatistics::tajima83(*psc1, false);
 		}
 		
 		/** Outgroup **/
