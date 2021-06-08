@@ -770,16 +770,18 @@ if (argc == 1 || argc < 13)
 	cout << "\tPi_Pop : Tajima's estimator of nucleotides diversity" << endl;
 	cout << "\tW_Pop : Watterson's estimator of nucleotides diversity" << endl;
 	cout << "\tD_Pop : Tajima's D" << endl;
-	cout << "\tDxy: Mean pairwaise diverge between all ingroup sequences" << endl;
-	cout << "\tFstHud : Fst computed as in Hudson et al. 1992 Genetics 132:153 eq. 3" << endl;
-	cout << "\tFstNei : Fst computed as 1 - mean_Pi_Intra_Pop / Pi_total (Nei 1982)" << endl;
-	cout << "\tPiInter : Inter popultaion nucleotides diversity" << endl;
+	cout << "\tDxy or Pi between : Average number of pairwise differences between sequences from two populations, excluding all comparisons between sequences within populations (Nei 1987; Cruickshank & Hahn, 2014)" << endl;
+	cout << "\tFstHud : Fst computed as 1 - mean_Pi_Intra_Pop / Pi Between (or Dxy) (Hudson et al. 1992 Genetics 132:153 eq. 3)" << endl;
+	cout << "\tFstNei : Fst computed as 1 - mean_Pi_Intra_Pop / Pi Total (Nei 1982)" << endl;
+	cout << "\tFstNei_weighted : weigth by the sample size of each population with w = 1.* n_x/(n_x + n_y) and meanPiIntra = w*p_x + (1-w)*p_y" << endl;
+	cout << "\tFstNei_unweighted : with w = 0.5 and meanPiIntra = w*p_x + (1-w)*p_y" << endl;
+	cout << "\tPiTotal : Nucleotides diversity" << endl;
 	cout << "\tTs_Pop : Number of transition" << endl;
 	cout << "\tgc : GC content" << endl;
 	cout << "\tsizeOut : Size of outgroup sequence excluding gap and unresolved site (bp)" << endl;
 	cout << "\tdivOut : Mean divergence between outgroup sequence and population n°2" << endl;
 
-	cout << "### Statistics for coding sequences :" << endl;
+	cout << "### Statistics for coding sequences only :" << endl;
 	cout << "\tPS_Pop : Nucleotide diversity of synonymous sites" << endl;
 	cout << "\tPN_Pop : Nucleotide diversity of non-synonymous sites" << endl;
 	cout << "\tgc3 : GC content at the third codon position" << endl;
@@ -883,7 +885,7 @@ ofstream Fileout (outF.c_str(), ios::out);
 
 if(coding == "coding"){
 	Fileout << "name\tsize\t";
-	Fileout << "S_Pop1\tS_Pop2\tPi_Pop1\tPi_Pop2\tW_Pop1\tW_Pop2\tD_Pop1\tD_Pop2\tFstHud\tFstNei_weighted\tPiInter\t";
+	Fileout << "S_Pop1\tS_Pop2\tPi_Pop1\tPi_Pop2\tW_Pop1\tW_Pop2\tD_Pop1\tD_Pop2\tDxy\tPiTotal\tFstHud\tFstNei_weighted\tFstNei_unweighted\t";
 	Fileout << "Ts_Pop1\tTs_Pop2\t";
 	Fileout << "PS_Pop1\tPN_Pop1\tNSS_Pop1\tPS_Pop2\tPN_Pop2\tNSS_Pop2\t";
 	Fileout << "gc3\tNumberOfStop\tInFrameStop\tsizeOut1\tsizeOut2\tdivOut1\tdivOut2\tNSS_Out1\tdiv_NonSyn_Out1\tdiv_Syn_Out1\tNSS_Out2\tdiv_NonSyn_Out2\tdiv_Syn_Out2" <<  endl;
@@ -892,7 +894,7 @@ if(coding == "coding"){
 }
 if(coding == "non-coding"){
 	Fileout << "name\tsize\t";
-	Fileout << "S_Pop1\tS_Pop2\tPi_Pop1\tPi_Pop2\tW_Pop1\tW_Pop2\tD_Pop1\tD_Pop2\tDxy\tFstHud\tFstNei_weighted\tFstNei_unweighted\tPiInter\t";
+	Fileout << "S_Pop1\tS_Pop2\tPi_Pop1\tPi_Pop2\tW_Pop1\tW_Pop2\tD_Pop1\tD_Pop2\tDxy\tPiTotal\tFstHud\tFstNei_weighted\tFstNei_unweighted\t";
 	Fileout << "gc\tsizeOut1\tsizeOut2\tdivOut1\tdivOut2\tFixed\tPrivatePop1\tPrivatePop2\tShared" <<  endl;
 }
 
@@ -931,7 +933,7 @@ while (!Filelist.eof ()){
 	unsigned int Size, S_Pop2, S_Pop1;
 	unsigned int sizeSeqOut1 = 0;
 	unsigned int sizeSeqOut2 = 0;
-	double PiPop1, PiPop2, WPop1, WPop2, TajimaDPop1, TajimaDPop2, Dxy;
+	double PiPop1, PiPop2, WPop1, WPop2, TajimaDPop1, TajimaDPop2, Dxy, piTotal;
 
 	if(coding == "coding"){
 	
@@ -1121,17 +1123,22 @@ while (!Filelist.eof ()){
 	
 		if(S_Pop1 == 0 && S_Pop2 == 0){
 			FstHud = -999.0;
-			FstNei = -999.0;
-			piInter = 0.0;
+			FstNei_w = -999.0;
+			FstNei_uw = -999.0;
+			Dxy = 0.0;
+			piTotal = 0.0;
 		}else{
-			FstHud = FstHudson92(*pscFinalNuc, 1, 2, false);
-			FstNei = FstNei82(*pscFinalNuc, 1, 2, true, false);
-			piInter = PiInter(*pscFinalNuc, 1, 2);
+			FstHud = FstHudson92(*psc1, 1, 2, false);
+			FstNei_w = FstNei82(*psc1, 1, 2, true, false);
+			FstNei_uw = FstNei82(*psc1, 1, 2, false, false);
+			Dxy = PiInter(*pscFinalNuc, 1, 2);
+			piTotal = tajima83(*psci, false);
 		}
-		
+
+	
 		Fileout << nomfic << "\t" << Size << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t" << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
 		Fileout << TajimaDPop1 << "\t" << TajimaDPop2 << "\t";
-		Fileout << FstHud << "\t" << FstNei << "\t" << piInter << "\t";
+		Fileout <<  Dxy << "\t" << FstHud << "\t" << FstNei_w << "\t" << FstNei_uw << "\t";
 		Fileout << getNumberOfTransitions2(*pscPop1Nuc) << "\t" << getNumberOfTransitions2(*pscPop2Nuc) << "\t" ;
 		Fileout << piSynonymous2( *pscPop1,*GC, false, false)  << "\t" << piNonSynonymous2( *pscPop1, *GC, false, false) << "\t" << meanSynonymousSitesNumber2( *pscPop1, *GC, tvts, false) << "\t";
 		Fileout << piSynonymous2( *pscPop2,*GC, false, false)  << "\t" << piNonSynonymous2( *pscPop2, *GC, false, false) << "\t" << meanSynonymousSitesNumber2( *pscPop2, *GC, tvts, false) << "\t";
@@ -1216,12 +1223,14 @@ while (!Filelist.eof ()){
 			FstHud = -999.0;
 			FstNei_w = -999.0;
 			FstNei_uw = -999.0;
-			piInter = 0.0;
+			Dxy = 0.0;
+			piTotal = 0.0;
 		}else{
 			FstHud = FstHudson92(*psc1, 1, 2, false);
 			FstNei_w = FstNei82(*psc1, 1, 2, true, false);
 			FstNei_uw = FstNei82(*psc1, 1, 2, false, false);
-			piInter = PiInter(*psc1, 1, 2);
+			Dxy = PiInter(*psc1, 1, 2);
+			piTotal = tajima83(*psci, false);
 		}
 		
 		/** Outgroup **/
@@ -1253,8 +1262,8 @@ while (!Filelist.eof ()){
 		Fileout << nomfic << "\t" << Size << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t";
 		Fileout << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
 		Fileout << TajimaDPop1 << "\t" << TajimaDPop2 << "\t";
-		Fileout << Dxy << "\t";
-		Fileout << FstHud << "\t" << FstNei_w  << "\t" << FstNei_uw << "\t" << piInter << "\t";
+		Fileout << Dxy << "\t" << piTotal << "\t";
+		Fileout << FstHud << "\t" << FstNei_w  << "\t" << FstNei_uw << "\t";
 		Fileout << gc << "\t" << sizeSeqOut1 << "\t" << sizeSeqOut2 << "\t" <<  diffOut1 << "\t" << diffOut2 << "\t";
 		Fileout << SharedFixed[0] << "\t" << SharedFixed[1] << "\t"  <<SharedFixed[2] << "\t" << SharedFixed[3] << endl;
 		
