@@ -46,7 +46,7 @@ seq_stat_2pop -seq [listSeq] -f [phylip or fasta] -coding [coding or non-coding]
 - Pi_Pop : Tajima's estimator of nucleotides diversity
 - W_Pop : Watterson's estimator of nucleotides diversity
 - D_Pop : Tajima's D
-- Dxy: Mean pairwaise diverge between all ingroup sequences
+- Dxy or Pi between : Average number of pairwise differences between sequences from two populations, excluding all comparisons between sequences within populations (Nei 1987; Cruickshank & Hahn, 2014)
 - FstHud : Fst computed as in Hudson et al. 1992 Genetics 132:153 eq. 3
 - FstNei_w : Fst computed as 1 - mean_Pi_Intra_Pop / Pi_total with mean weigthed using sample size (Nei 1982) with w = 1.* n_x/(n_x + n_y) and meanPiIntra = w*p_x + (1-w)*p_y. With n_x and n_y is the sample size of the population x and y respectively.
 - FstNei_uw : Fst computed as 1 - mean_Pi_Intra_Pop / Pi_total (Nei 1982)
