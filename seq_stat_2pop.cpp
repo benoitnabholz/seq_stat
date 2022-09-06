@@ -1145,7 +1145,7 @@ while (!Filelist.eof ()){
 	
 		Fileout << nomfic << "\t" << Size << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t" << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
 		Fileout << TajimaDPop1 << "\t" << TajimaDPop2 << "\t";
-		Fileout <<  Dxy << "\t" << FstHud << "\t" << FstNei_w << "\t" << FstNei_uw << "\t";
+		Fileout <<  Dxy << "\t" << piTotal << "\t" << FstHud << "\t" << FstNei_w << "\t" << FstNei_uw << "\t";
 		Fileout << getNumberOfTransitions2(*pscPop1Nuc) << "\t" << getNumberOfTransitions2(*pscPop2Nuc) << "\t" ;
 		Fileout << piSynonymous2( *pscPop1,*GC, false, false)  << "\t" << piNonSynonymous2( *pscPop1, *GC, false, false) << "\t" << meanSynonymousSitesNumber2( *pscPop1, *GC, tvts, false) << "\t";
 		Fileout << piSynonymous2( *pscPop2,*GC, false, false)  << "\t" << piNonSynonymous2( *pscPop2, *GC, false, false) << "\t" << meanSynonymousSitesNumber2( *pscPop2, *GC, tvts, false) << "\t";
