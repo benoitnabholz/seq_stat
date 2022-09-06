@@ -8,6 +8,10 @@ g++ -g /home/benoitnabholz/Progr/C++/popgen/seq_stat_2pop/seq_stat_2pop.cpp -o .
 g++ --static -std=c++14 -g ~/pCloudDrive/Progr/C++/popgen/seq_stat_2pop/seq_stat_2pop.cpp -o ~/bin/seq_stat_2pop -DVIRTUAL_COV=yes -Wall -I$HOME/local/bpp/dev/include  -L$HOME/local/bpp/dev/lib -lbpp-phyl -lbpp-popgen -lbpp-seq -lbpp-core -Wdeprecated 
 strip ~/bin/seq_stat_2pop
 
+
+g++ --static -std=c++14 -g ~/pCloudDrive/Progr/C++/popgen/seq_stat_2pop/seq_stat_2pop.cpp -o ~/bin/seq_stat_2pop -DVIRTUAL_COV=yes -Wall -lbpp-phyl -lbpp-popgen -lbpp-seq -lbpp-core -Wdeprecated 
+strip ~/bin/seq_stat_2pop
+
 * 
 **/
 #include <Bpp/Seq/Site.h>
@@ -563,10 +567,10 @@ double FstHudson92(const PolymorphismSequenceContainer& psc, unsigned int id1, u
 {
 	vector<double> vdiff;
 	double piIntra1, piIntra2, meanPiIntra, piInter, Fst;
-	
+
 	PolymorphismSequenceContainer *Pop1 = PolymorphismSequenceContainerTools::extractGroup(psc, id1);
 	PolymorphismSequenceContainer *Pop2 = PolymorphismSequenceContainerTools::extractGroup(psc, id2);
-	
+
 	piIntra1 = SequenceStatistics::tajima83(*Pop1, false);
 	piIntra2 = SequenceStatistics::tajima83(*Pop2, false);
 	
@@ -967,7 +971,6 @@ while (!Filelist.eof ()){
 		/** Split dataset in population **/
 		string Pop1, Pop2, Out;
 		Pop1 = Pop2 = Out = "no";
-
 		for(unsigned int i = 0; i < pscFinal->getNumberOfSequences(); i ++){
 		   
 			if(TextTools::hasSubstring(pscFinal->getSequence(i).getName(), pop1)){
@@ -986,7 +989,7 @@ while (!Filelist.eof ()){
 				continue;
 			}
 		}
-  
+		
 		PolymorphismSequenceContainer * pscPop1 = PolymorphismSequenceContainerTools::extractGroup (*pscFinal, 1);
 		PolymorphismSequenceContainer * pscPop2 = PolymorphismSequenceContainerTools::extractGroup (*pscFinal, 2);
 
@@ -1005,6 +1008,7 @@ while (!Filelist.eof ()){
 			pscFinalNuc->setGroupId(seq.getName(), pscFinal->getGroupId(i));
 		}
 
+		
 		/******************************************************************/
 		/** compute sequence statistic coding                            **/
 		/******************************************************************/
@@ -1099,6 +1103,7 @@ while (!Filelist.eof ()){
 			diffNSOut2.push_back(-999);
 			diffNSOut2.push_back(-999);
 		}
+
 		/** ************************************************ **/
 		/** ***** Compute Pop Gen Statistic *******************/
 		/** ************************************************ **/
@@ -1130,13 +1135,13 @@ while (!Filelist.eof ()){
 			Dxy = 0.0;
 			piTotal = 0.0;
 		}else{
-			FstHud = FstHudson92(*psc1, 1, 2, false);
-			FstNei_w = FstNei82(*psc1, 1, 2, true, false);
-			FstNei_uw = FstNei82(*psc1, 1, 2, false, false);
-			Dxy = PiInter(*pscFinalNuc, 1, 2);
-			piTotal = SequenceStatistics::tajima83(*psc1, false);
-		}
 
+			FstHud = FstHudson92(*pscFinalNuc, 1, 2, false);
+			FstNei_w = FstNei82(*pscFinalNuc, 1, 2, true, false);
+			FstNei_uw = FstNei82(*pscFinalNuc, 1, 2, false, false);
+			Dxy = PiInter(*pscFinalNuc, 1, 2);
+			piTotal = SequenceStatistics::tajima83(*pscFinalNuc, false);
+		}
 	
 		Fileout << nomfic << "\t" << Size << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t" << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
 		Fileout << TajimaDPop1 << "\t" << TajimaDPop2 << "\t";
@@ -1147,7 +1152,7 @@ while (!Filelist.eof ()){
 		Fileout << gc3 << "\t" << numberOfStopCodon  << "\t" << InFrameStop << "\t" << sizeSeqOut1 << "\t" << sizeSeqOut2 << "\t"<< diffOut1 << "\t" << diffOut2 << "\t";
 		Fileout << diffNSOut1[2] << "\t" << diffNSOut1[0] << "\t" << diffNSOut1[1] << "\t";
 		Fileout << diffNSOut2[2] << "\t" << diffNSOut2[0] << "\t" << diffNSOut2[1] << endl;
-		
+
 		delete pscCodon;
 		delete pscPop2;
 		delete pscPop1;
