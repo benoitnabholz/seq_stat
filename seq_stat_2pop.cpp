@@ -25,7 +25,7 @@ strip ~/bin/seq_stat_2pop
 #include <Bpp/Seq/Alphabet/AlphabetTools.h>
 #include <Bpp/Seq/Sequence.h>
 #include <Bpp/Seq/SequenceTools.h>
-
+#include <Bpp/Seq/Container/SiteContainerIterator.h>
 #include <Bpp/Seq/CodonSiteTools.h>
 #include <Bpp/Seq/GeneticCode/StandardGeneticCode.h>
 #include <Bpp/Seq/Container/VectorSequenceContainer.h>
@@ -591,8 +591,7 @@ double FstHudson92(const PolymorphismSequenceContainer& psc, unsigned int id1, u
 /** Pi intra could be weighted mean or not 
  * with w = 1.* n_x/(n_x + n_y) and meanPiIntra = w*p_x + (1-w)*p_y
  * no weighted is w = 0.5
-/********************************************************************************               ******************/
-
+   ******************/
 double FstNei82(const PolymorphismSequenceContainer& psc, unsigned int id1, unsigned int id2, bool weightedPiIntra, bool gapflag)
 {
 	vector<double> vdiff;
@@ -988,11 +987,14 @@ while (!Filelist.eof ()){
 				pscFinal->setGroupId(i, 3);
 				continue;
 			}
+			// if sequence has not been assigned in any group it is put group number 4.
+			cout << "Warning : sequence  " << psc1->getSequence(i).getName() << " is neither ingroup nor outgroup" << endl;
+			psc1->setGroupId(i,4);
 		}
 		
 		PolymorphismSequenceContainer * pscPop1 = PolymorphismSequenceContainerTools::extractGroup (*pscFinal, 1);
 		PolymorphismSequenceContainer * pscPop2 = PolymorphismSequenceContainerTools::extractGroup (*pscFinal, 2);
-
+		
 		/** create nucleotides alignment **/
 		PolymorphismSequenceContainer * pscPop1Nuc = new PolymorphismSequenceContainer(alpha);
 		SequenceContainerTools::convertAlphabet(*pscPop1, *pscPop1Nuc);
@@ -1027,6 +1029,7 @@ while (!Filelist.eof ()){
 	
 		/** compute number of complete site out1 and then divergence **/
 		if(Out == "yes"){
+		
 			PolymorphismSequenceContainer * pscOut = PolymorphismSequenceContainerTools::extractGroup (*pscFinal, 3);
 			PolymorphismSequenceContainer * pscOutNuc = new PolymorphismSequenceContainer(alpha);
 			SequenceContainerTools::convertAlphabet(*pscOut, *pscOutNuc);
@@ -1187,6 +1190,9 @@ while (!Filelist.eof ()){
 				psc1->setGroupId(i,3);
 				continue;
 			}
+			// if sequence has not been assigned in any group it is put group number 4.
+			cout << "Warning : sequence  " << psc1->getSequence(i).getName() << " is neither ingroup nor outgroup" << endl;
+			psc1->setGroupId(i,4);
 		}
 		
 		PolymorphismSequenceContainer * pscPop1 = PolymorphismSequenceContainerTools::extractGroup (*psc1, 1);
@@ -1208,8 +1214,9 @@ while (!Filelist.eof ()){
 		
 		double gc = SequenceStatistics::gcContent(*pscPop2);
 		Size = pscPop2->getNumberOfSites();
-		S_Pop2 = SequenceStatistics::numberOfPolymorphicSites( *pscPop2, false );
 		S_Pop1 = SequenceStatistics::numberOfPolymorphicSites( *pscPop1, false );
+		S_Pop2 = SequenceStatistics::numberOfPolymorphicSites( *pscPop2, false );
+		
 		PiPop1 = SequenceStatistics::tajima83(*pscPop1, false);
 		PiPop2 = SequenceStatistics::tajima83(*pscPop2, false);
 		WPop1 = SequenceStatistics::watterson75(*pscPop1, false );
@@ -1264,7 +1271,17 @@ while (!Filelist.eof ()){
 			delete pscOut;
 		}
 		
-		vector<int> SharedFixed = NumberOfDifferenceBetweenPopulations(*psc1, 1, 2);
+		// Exclude outgroup and unassigned sequence before to compute number of difference
+		PolymorphismSequenceContainer * psc2 = new PolymorphismSequenceContainer(alpha);
+		for(unsigned int i = 0; i < psc1->getNumberOfSequences(); i ++){
+			if(psc1->getGroupId(i) == 1 || psc1->getGroupId(i) == 2){
+				BasicSequence seq = BasicSequence(psc1->getSequence(i).getName(), psc1->getSequence(i).toString(), alpha);
+				psc2->addSequence(seq);
+				psc2->setGroupId(seq.getName(), psc1->getGroupId(i));
+			}
+		}
+		
+		vector<int> SharedFixed = NumberOfDifferenceBetweenPopulations(*psc2, 1, 2);
 		
 		Fileout << nomfic << "\t" << Size << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t";
 		Fileout << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
@@ -1276,6 +1293,7 @@ while (!Filelist.eof ()){
 		
 		delete pscPop1;
 		delete pscPop2;
+		delete psc2;
 
 	}
 	
