@@ -1,22 +1,28 @@
 # The program compute population genetic statistics 
 
-This is a badly written but useful program to compute population genetics statistics using sequences data in fasta or phylip format.
-This program is written using the [**Bio ++** library ](http://biopp.univ-montp2.fr/wiki/index.php/Main_Page) (Guéguen et al. 2013).
+`seq_stat_2pop` is a badly written but useful program to compute population genetics statistics using sequences data in fasta or phylip format.
+This program is written using the [**Bio ++** library ](https://biopp.github.io/) (Guéguen et al. 2013).
 
+The program `seq_stat_2pop_2N` compute statistics using only two diploid individuals. It was used in Allio et al. 2021.
+
+The programs "V3" will be available for bio++ V3 when a stable version will be released.
 
 *Author:* Benoit Nabholz
 
-*Reference:* Guéguen L, Gaillard S, Boussau B, Gouy M, Groussin M, Rochette NC, Bigot T, Fournier D, Pouyet F, Cahais V, et al. 2013. Bio++: Efficient Extensible Libraries and Tools for Computational Molecular Evolution. Mol. Biol. Evol. 30:1745–1750.
+*Reference:* 
+- Guéguen L, Gaillard S, Boussau B, Gouy M, Groussin M, Rochette NC, Bigot T, Fournier D, Pouyet F, Cahais V, et al. 2013. Bio++: Efficient Extensible Libraries and Tools for Computational Molecular Evolution. Mol. Biol. Evol. 30:1745–1750.
+- Allio R, Tilak M-K, Scornavacca C, Avenant NL, Kitchener AC, Corre E, Nabholz B, Delsuc F. 2021. High-quality carnivoran genomes from roadkill samples enable comparative species delineation in aardwolf and bat-eared fox. Elife 10:e63167.
+
 
 --------
 ### Installation
 
-You can use the static executable compiled for linux x64 computer (see [Release](https://github.com/benoitnabholz/seq_stat_2pop/releases/tag/v1)). You can also compile the program assuming that you have [**Bio ++**](http://biopp.univ-montp2.fr/wiki/index.php/Main_Page) installed (here the Bio++ library is locally installed in `$HOME/local/bpp/dev/` directory):
+You can use the static executable compiled for linux x64 computer (see [Release](https://github.com/benoitnabholz/seq_stat_2pop/releases/)). You can also compile the program assuming that you have [**Bio ++**](https://biopp.github.io/) installed (here the Bio++ library V2 is locally installed in `$HOME/local/bpp/dev/` directory):
 
 ```
 g++ -g seq_stat_2pop.cpp -o ./seq_stat_2pop \
  -DVIRTUAL_COV=yes -Wall \
- -I$HOME/local/bpp/dev/include  -L$HOME/local/bpp/dev/lib64 \
+ -I$HOME/local/bpp/dev/include  -L$HOME/local/bpp/dev/lib \
  -lbpp-popgen -lbpp-phyl -lbpp-seq -lbpp-core
 ```
 
@@ -88,3 +94,26 @@ seq_stat_2pop -seq list_file -f fasta -coding coding -tvts 2.0 \
 
 ```
 
+--------
+
+The program seq_stat_2pop_2N
+
+###  Usage of :
+```
+seq_stat_2pop_2N -seq [listSeq] -f [phylip or fasta] -pop1 [prefix_pop1] -pop2 [prefix_pop2] -o [out file]
+```
+
+## Options :
+- seq : a text file with the list of the sequence to analysed.
+- f : sequence format `fasta` ot `phylip`
+- pop1 : the sequence name of the population 1 must include this prefix in their names (e.g. "PopA_ind1", "PopA_ind2" etc...).
+- pop2 : the sequence name of the population 2 must include this prefix in their names (e.g. "PopB_ind1", "PopB_ind2" etc...).
+- o : the name of the out file in csv format.
+
+
+## Statistics :
+- Fixed : Substitution between individual 1 and 2
+- PrivatePop1 &	PrivatePop2 : Heterozygous position unique to individual 1 and 2 respectively.
+- Shared : Heterozygous position shared between individual 1 and 2
+- Pi1 & Pi2 : Heterozygosity of individual 1 and 2
+- PiTot : Tajima's estimator of nucleotides diversity of individual 1 and 2 combined
