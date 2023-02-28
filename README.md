@@ -15,6 +15,8 @@ The programs "V3" will be available for bio++ V3 when a stable version will be r
 
 
 --------
+## seq_stat_2pop
+
 ### Installation
 
 You can use the static executable compiled for linux x64 computer (see [Release](https://github.com/benoitnabholz/seq_stat_2pop/releases/)). You can also compile the program assuming that you have [**Bio ++**](https://biopp.github.io/) installed (here the Bio++ library V2 is locally installed in `$HOME/local/bpp/dev/` directory):
@@ -96,7 +98,7 @@ seq_stat_2pop -seq list_file -f fasta -coding coding -tvts 2.0 \
 
 --------
 
-The program seq_stat_2pop_2N
+## seq_stat_2pop_2N
 
 ###  Usage of :
 ```
