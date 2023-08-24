@@ -1,9 +1,14 @@
-# The program compute population genetic statistics 
+# Presentation
 
-`seq_stat_2pop` is a badly written but useful program to compute population genetics statistics using sequences data in fasta or phylip format.
-This program is written using the [**Bio ++** library ](https://biopp.github.io/) (Guéguen et al. 2013).
+This is a suite of badly written but useful programs to compute population genetics statistics using sequences data in fasta or phylip format.
+These programs are written using the [**Bio ++** library ](https://biopp.github.io/) (Guéguen et al. 2013).
 
-The program `seq_stat_2pop_2N` compute statistics using only two diploid individuals. It was used in Allio et al. 2021.
+This include:
+- `seq_stat_2pop` to compute statistics on two populations
+
+- `seq_stat_2pop_2N` to compute statistics using only two diploid individuals. It was used in Allio et al. 2021.
+
+- `seq_stat_coding` to compute statistics on only population using a alignment of coding sequences.
 
 The programs "V3" will be available for bio++ V3 when a stable version will be released.
 
@@ -15,8 +20,6 @@ The programs "V3" will be available for bio++ V3 when a stable version will be r
 
 
 --------
-## seq_stat_2pop
-
 ### Installation
 
 You can use the static executable compiled for linux x64 computer (see [Release](https://github.com/benoitnabholz/seq_stat_2pop/releases/)). You can also compile the program assuming that you have [**Bio ++**](https://biopp.github.io/) installed (here the Bio++ library V2 is locally installed in `$HOME/local/bpp/dev/` directory):
@@ -29,6 +32,7 @@ g++ -g seq_stat_2pop.cpp -o ./seq_stat_2pop \
 ```
 
 --------
+## seq_stat_2pop
 
 ###  Usage:
 ```
@@ -42,7 +46,7 @@ seq_stat_2pop -seq [listSeq] -f [phylip or fasta] -coding [coding or non-coding]
 - seq : a text file with the list of the sequence to analysed.
 - f : sequence format `fasta` ot `phylip`
 - coding : `coding` if protein coding sequences (only Standard Genetic Code)
-- tvts : the transition over transversion ratio used for the computation of the number of synonymous site ( see http://biopp.univ-montp2.fr/apidoc/bpp-seq/html/classbpp_1_1CodonSiteTools.html#a0fb6fb2b314dd557b52219dffac330e9 )
+- tvts : the transition over transversion ratio used for the computation of the number of synonymous site 
 - pop1 : the sequence name of the population 1 must include this prefix in their names (e.g. "PopA_ind1", "PopA_ind2" etc...).
 - pop2 : the sequence name of the population 2 must include this prefix in their names (e.g. "PopB_ind1", "PopB_ind2" etc...).
 - outgroup : the sequence name of the outgroup must include this prefix in their names.
@@ -119,3 +123,20 @@ seq_stat_2pop_2N -seq [listSeq] -f [phylip or fasta] -pop1 [prefix_pop1] -pop2 [
 - Shared : Heterozygous position shared between individual 1 and 2
 - Pi1 & Pi2 : Heterozygosity of individual 1 and 2
 - PiTot : Tajima's estimator of nucleotides diversity of individual 1 and 2 combined
+
+--------
+## seq_stat_coding
+
+###  Usage:
+```
+seq_stat_coding -seq [listSeq] -f [phylip or fasta] -tstv [ts/tv ratio for computing NSS] -code [univ or mtmam or mtinv or mtechi] -o [out file]
+```
+## Options :
+- seq : a text file with the list of the sequence to analysed.
+- f : sequence format `fasta` ot `phylip`
+- tvts : the transition over transversion ratio used for the computation of the number of synonymous site 
+- code : genetic code (univ = standard universal; mt for mitochondrial
+- o : the name of the out file in csv format.
+
+
+
