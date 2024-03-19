@@ -3,6 +3,8 @@
 This is a suite of badly written but useful programs to compute population genetics statistics using sequences data in fasta or phylip format.
 These programs are written using the [**Bio ++** library ](https://biopp.github.io/) (Guéguen et al. 2013).
 
+
+
 This include:
 - `seq_stat_2pop` to compute statistics on two populations
 
@@ -10,11 +12,11 @@ This include:
 
 - `seq_stat_coding` to compute statistics on only population using a alignment of coding sequences.
 
-The programs "V3" will be available for bio++ V3 when a stable version will be released.
+Last update of `seq_stat_2pop` (Vesion 2.0; source : seq_stat_2pop_bppV3.cpp) is written in [Bio++ V3](https://biopp.github.io/).
 
 *Author:* Benoit Nabholz
 
-*Reference:* 
+*References:* 
 - Guéguen L, Gaillard S, Boussau B, Gouy M, Groussin M, Rochette NC, Bigot T, Fournier D, Pouyet F, Cahais V, et al. 2013. Bio++: Efficient Extensible Libraries and Tools for Computational Molecular Evolution. Mol. Biol. Evol. 30:1745–1750.
 - Allio R, Tilak M-K, Scornavacca C, Avenant NL, Kitchener AC, Corre E, Nabholz B, Delsuc F. 2021. High-quality carnivoran genomes from roadkill samples enable comparative species delineation in aardwolf and bat-eared fox. Elife 10:e63167.
 
@@ -22,13 +24,12 @@ The programs "V3" will be available for bio++ V3 when a stable version will be r
 --------
 ### Installation
 
-You can use the static executable compiled for linux x64 computer (see [Release](https://github.com/benoitnabholz/seq_stat_2pop/releases/)). You can also compile the program assuming that you have [**Bio ++**](https://biopp.github.io/) installed (here the Bio++ library V2 is locally installed in `$HOME/local/bpp/dev/` directory):
+You can use the static executable compiled for linux x64 computer (see [Release](https://github.com/benoitnabholz/seq_stat/releases/)). You can also compile the program assuming that you have [**Bio ++**](https://biopp.github.io/) installed (here the Bio++ library V2 is locally installed in `$HOME/local/bpp/dev/` directory):
 
 ```
-g++ -g seq_stat_2pop.cpp -o ./seq_stat_2pop \
- -DVIRTUAL_COV=yes -Wall \
- -I$HOME/local/bpp/dev/include  -L$HOME/local/bpp/dev/lib \
- -lbpp-popgen -lbpp-phyl -lbpp-seq -lbpp-core
+g++ --static -std=c++14 -g  seq_stat_2pop_bppV3.cpp -o seq_stat_2pop \
+ -Wall -lbpp-phyl3 -lbpp-popgen3 -lbpp-seq3 -lbpp-core3  \
+ -I$HOME/local/include -L$HOME/local/lib
 ```
 
 --------
