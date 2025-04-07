@@ -10,7 +10,7 @@ work with bio++ V3 https://biopp.github.io/
 
 ## compilation
 
-g++ --static -std=c++14 -g  ~/pCloudDrive/Progr/C++/popgen/seq_stat/seq_stat_2pop_bppV3.cpp -o ~/bin/seq_stat_2pop -Wall -lbpp-phyl3 -lbpp-popgen3 -lbpp-seq3 -lbpp-core3 -I$HOME/local/include -L$HOME/local/lib
+g++ --static -std=c++14 -g  ~/pCloudDrive/Progr/C++/popgen/seq_stat/seq_stat_2pop_bppV3.cpp -o ~/bin/seq_stat_2pop -Wall -lbpp-phyl3 -lbpp-popgen3 -lbpp-seq3 -lbpp-core3 -I$HOME/local/bpp/dev/include  -L$HOME/local/bpp/dev/lib
 
 strip ~/bin/seq_stat_2pop
 
@@ -606,6 +606,7 @@ if (argc == 1 || argc < 13)
 {
 	cout << "\n#####################";
 	cout << "\nVersion 2.0 using BIO++ V3\n";
+	cout << "\nSource : seq_stat_2pop_bppV3.cpp https://github.com/benoitnabholz/seq_stat\n";
 	cout << "\n##### USAGE :\n";
 	cout << "\nseq_stat_2pop -seq [listSeq] -f [phylip or fasta] -coding [coding or non-coding] -tvts [tv/ts ratio for computing NSS] -pop1 [prefix_pop1] -pop2 [prefix_pop2] -outgroup [prefix_out] -o [out file]\n" << endl;
 	
@@ -732,7 +733,7 @@ ifstream Filelist (listName.c_str(), ios::in);
 ofstream Fileout (outF.c_str(), ios::out);
 
 if(coding == "coding"){
-	Fileout << "name\tsize\t";
+	Fileout << "name\tsize\tN_Pop1\tN_Pop2\t";
 	Fileout << "S_Pop1\tS_Pop2\tPi_Pop1\tPi_Pop2\tW_Pop1\tW_Pop2\tD_Pop1\tD_Pop2\tDxy\tPiTotal\tFstHud\tFstNei_weighted\tFstNei_unweighted\t";
 	Fileout << "Ts_Pop1\tTs_Pop2\t";
 	Fileout << "PS_Pop1\tPN_Pop1\tNSS_Pop1\tPS_Pop2\tPN_Pop2\tNSS_Pop2\t";
@@ -741,7 +742,7 @@ if(coding == "coding"){
 
 }
 if(coding == "non-coding"){
-	Fileout << "name\tsize\t";
+	Fileout << "name\tsize\tN_Pop1\tN_Pop2\t";
 	Fileout << "S_Pop1\tS_Pop2\tPi_Pop1\tPi_Pop2\tW_Pop1\tW_Pop2\tD_Pop1\tD_Pop2\tDxy\tPiTotal\tFstHud\tFstNei_weighted\tFstNei_unweighted\t";
 	Fileout << "gc\tsizeOut1\tsizeOut2\tdivOut1\tdivOut2\tFixed\tPrivatePop1\tPrivatePop2\tShared" <<  endl;
 }
@@ -782,7 +783,7 @@ while (!Filelist.eof ()){
 
 	/** set variables for statistic **/
 	double diffOut1, diffOut2;
-	unsigned int Size, S_Pop2, S_Pop1;
+	unsigned int Size, N_Pop2, N_Pop1, S_Pop2, S_Pop1;
 	unsigned int sizeSeqOut1 = 0;
 	unsigned int sizeSeqOut2 = 0;
 	double GCcontent, FstHud, FstNei_w, FstNei_uw, PiPop1, PiPop2, WPop1, WPop2, TajimaDPop1, TajimaDPop2, Dxy, piTotal;
@@ -867,6 +868,16 @@ while (!Filelist.eof ()){
 			pscFinalNuc->setGroupId(i, pscFinal->getGroupId(i));
 
 		}
+		
+		// create container only with ingroup
+		PolymorphismSequenceContainer * pscIngroup = new PolymorphismSequenceContainer(psc1->getAlphabet());
+		for(unsigned int i = 0; i < pscFinal->getNumberOfSequences(); i ++){
+			if(pscFinal->getGroupId(i) == 1 || pscFinal->getGroupId(i) == 2){
+				unique_ptr<Sequence> s1(pscFinal->sequence(i).clone());
+				pscIngroup->addSequence(pscFinal->sequence(i).getName(), s1);
+				pscIngroup->setGroupId(pscFinal->sequence(i).getName(), pscFinal->getGroupId(i));
+			}
+		} 
 		
 		/******************************************************************/
 		/** compute sequence statistic coding                            **/
@@ -980,6 +991,10 @@ while (!Filelist.eof ()){
 		/** ***** Compute Pop Gen Statistic *******************/
 		/** ************************************************ **/
 		Size = pscPop2Nuc->getNumberOfSites();
+		
+		N_Pop1 = pscPop1Nuc->getNumberOfSequences();
+		N_Pop2 = pscPop2Nuc->getNumberOfSequences();
+		
 		S_Pop1 = SequenceStatistics::numberOfPolymorphicSites( *pscPop1Nuc, false );
 		S_Pop2 = SequenceStatistics::numberOfPolymorphicSites( *pscPop2Nuc, false );
 		
@@ -1012,10 +1027,11 @@ while (!Filelist.eof ()){
 			FstNei_w = FstNei82(*pscFinalNuc, 1, 2, true, false);
 			FstNei_uw = FstNei82(*pscFinalNuc, 1, 2, false, false);
 			Dxy = PiInter(*pscFinalNuc, 1, 2);
-			piTotal = SequenceStatistics::tajima83(*pscFinalNuc, false);
+			piTotal = SequenceStatistics::tajima83(*pscIngroup, false);
 		}
 		
-		Fileout << nomfic << "\t" << Size << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t" << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
+		Fileout << nomfic << "\t" << Size << "\t" << N_Pop1 << "\t" << N_Pop2 << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t" ;
+		Fileout << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
 		Fileout << TajimaDPop1 << "\t" << TajimaDPop2 << "\t";
 		Fileout <<  Dxy << "\t" << piTotal << "\t" << FstHud << "\t" << FstNei_w << "\t" << FstNei_uw << "\t";
 		Fileout << getNumberOfTransitions2(*pscPop1Nuc) << "\t" << getNumberOfTransitions2(*pscPop2Nuc) << "\t" ;
@@ -1080,6 +1096,9 @@ while (!Filelist.eof ()){
 		GCcontent = SequenceStatistics::gcContent(*pscIngroup);
 		Size = pscPop2->getNumberOfSites();
 		
+		N_Pop1 = pscPop1->getNumberOfSequences();
+		N_Pop2 = pscPop2->getNumberOfSequences();
+		
 		S_Pop1 = SequenceStatistics::numberOfPolymorphicSites( *pscPop1, false );
 		S_Pop2 = SequenceStatistics::numberOfPolymorphicSites( *pscPop2, false );
 
@@ -1107,8 +1126,8 @@ while (!Filelist.eof ()){
 			FstHud = FstHudson92(*psc1, 1, 2, false);
 			FstNei_w = FstNei82(*psc1, 1, 2, true, false);
 			FstNei_uw = FstNei82(*psc1, 1, 2, false, false);
-			Dxy = PiInter(*psc1, 1, 2);
-			piTotal = SequenceStatistics::tajima83(*psc1, false);
+			Dxy = PiInter(*pscIngroup, 1, 2);
+			piTotal = SequenceStatistics::tajima83(*pscIngroup, false);
 		}
 
 		/** Outgroup **/
@@ -1144,7 +1163,7 @@ while (!Filelist.eof ()){
 		//  compute number of difference
 		vector<int> SharedFixed = NumberOfDifferenceBetweenPopulations(*pscIngroup, 1, 2);
 		
-		Fileout << nomfic << "\t" << Size << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t";
+		Fileout << nomfic << "\t" << Size << "\t" << N_Pop1 << "\t" << N_Pop2 << "\t" << S_Pop1 << "\t" << S_Pop2 << "\t";
 		Fileout << PiPop1 << "\t" << PiPop2 << "\t" << WPop1 << "\t" << WPop2 << "\t"; 
 		Fileout << TajimaDPop1 << "\t" << TajimaDPop2 << "\t";
 		Fileout << Dxy << "\t" << piTotal << "\t";
