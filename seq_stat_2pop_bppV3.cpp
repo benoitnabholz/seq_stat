@@ -1023,10 +1023,10 @@ while (!Filelist.eof ()){
 			piTotal = 0.0;
 		}else{
 
-			FstHud = FstHudson92(*pscFinalNuc, 1, 2, false);
-			FstNei_w = FstNei82(*pscFinalNuc, 1, 2, true, false);
-			FstNei_uw = FstNei82(*pscFinalNuc, 1, 2, false, false);
-			Dxy = PiInter(*pscFinalNuc, 1, 2);
+			FstHud = FstHudson92(*pscIngroup, 1, 2, false);
+			FstNei_w = FstNei82(*pscIngroup, 1, 2, true, false);
+			FstNei_uw = FstNei82(*pscIngroup, 1, 2, false, false);
+			Dxy = PiInter(*pscIngroup, 1, 2);
 			piTotal = SequenceStatistics::tajima83(*pscIngroup, false);
 		}
 		
@@ -1123,9 +1123,9 @@ while (!Filelist.eof ()){
 			Dxy = 0.0;
 			piTotal = 0.0;
 		}else{
-			FstHud = FstHudson92(*psc1, 1, 2, false);
-			FstNei_w = FstNei82(*psc1, 1, 2, true, false);
-			FstNei_uw = FstNei82(*psc1, 1, 2, false, false);
+			FstHud = FstHudson92(*pscIngroup, 1, 2, false);
+			FstNei_w = FstNei82(*pscIngroup, 1, 2, true, false);
+			FstNei_uw = FstNei82(*pscIngroup, 1, 2, false, false);
 			Dxy = PiInter(*pscIngroup, 1, 2);
 			piTotal = SequenceStatistics::tajima83(*pscIngroup, false);
 		}
